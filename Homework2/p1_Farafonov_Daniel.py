@@ -21,50 +21,21 @@ def line_number(source_filename: str, dest_filename: str) -> None:
         raise
 
 
-def _remove_comments_and_blanks(code: str) -> str:
-    """Removes "#" comments and blank lines from code, ignoring "#" inside strings."""
-    kept_chars = []
+def _strip_comment(line: str) -> str:
+    """Returns line with everything after an unquoted hash mark removed."""
+    trimmed = line.strip()
+    if trimmed.startswith('"""') and trimmed.endswith('"""'):
+        return line
     quote = ''
-    i = 0
-    length = len(code)
-    while i < length:
-        char = code[i]
-
+    for i, char in enumerate(line):
         if quote:
-            if char == '\\' and quote in ("'", '"'):
-                kept_chars.append(code[i:i + 2])
-                i += 2
-                continue
-            if code.startswith(quote, i):
-                kept_chars.append(quote)
-                i += len(quote)
+            if char == quote:
                 quote = ''
-                continue
-            kept_chars.append(char)
-            i += 1
-            continue
-
-        if code.startswith('"""', i) or code.startswith("'''", i):
-            quote = code[i:i + 3]
-            kept_chars.append(quote)
-            i += 3
-            continue
-        if char in ('"', "'"):
+        elif char in ('"', "'"):
             quote = char
-            kept_chars.append(char)
-            i += 1
-            continue
-        if char == '#':
-            while i < length and code[i] != '\n':
-                i += 1
-            continue
-
-        kept_chars.append(char)
-        i += 1
-
-    result_lines = [line.rstrip() for line in ''.join(kept_chars).split('\n')
-                     if line.strip() != '']
-    return '\n'.join(result_lines) + ('\n' if result_lines else '')
+        elif char == '#':
+            return line[:i]
+    return line
 
 
 def parse_functions(filename: str) -> tuple:
@@ -90,8 +61,10 @@ def parse_functions(filename: str) -> tuple:
             while index < total_lines and (
                     lines[index].strip() == '' or lines[index][0] in ' \t'):
                 index += 1
-            code = _remove_comments_and_blanks(''.join(lines[start:index]))
-            functions.append((start + 1, name, args, code))
+            body_lines = [_strip_comment(line).rstrip()
+                          for line in lines[start:index]]
+            code = '\n'.join(line for line in body_lines if line.strip())
+            functions.append((start + 1, name, args, code + '\n'))
         else:
             index += 1
 
