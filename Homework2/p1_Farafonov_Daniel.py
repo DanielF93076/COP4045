@@ -7,23 +7,7 @@ import re
 
 
 def line_number(source_filename: str, dest_filename: str) -> None:
-    """Copies a text file, prefixing every line with its line number.
-
-    Reads the file named by source_filename and writes each of its
-    lines, preceded by "N. " where N is the 1-based line number, to
-    the file named by dest_filename.
-
-    Args:
-        source_filename: Path of the text file to read.
-        dest_filename: Path of the file to create with numbered lines.
-
-    Returns:
-        None.
-
-    Raises:
-        OSError: If source_filename cannot be read or dest_filename
-            cannot be written.
-    """
+    """Writes source_filename's lines, each prefixed by its number, to dest_filename."""
     try:
         with open(source_filename, 'r', encoding='utf-8') as source_file:
             lines = source_file.readlines()
@@ -38,18 +22,7 @@ def line_number(source_filename: str, dest_filename: str) -> None:
 
 
 def _remove_comments_and_blanks(code: str) -> str:
-    """Strips "#" comments and empty lines from a snippet of Python code.
-
-    Scans the code one character at a time, keeping track of whether
-    the current position is inside a string, so a "#" that is part of
-    a string (e.g. inside a docstring) is not mistaken for a comment.
-
-    Args:
-        code: Python source code (one or more statements).
-
-    Returns:
-        The code with every comment and blank line removed.
-    """
+    """Removes "#" comments and blank lines from code, ignoring "#" inside strings."""
     kept_chars = []
     quote = ''
     i = 0
@@ -95,24 +68,7 @@ def _remove_comments_and_blanks(code: str) -> str:
 
 
 def parse_functions(filename: str) -> tuple:
-    """Parses a Python source file and extracts its top-level functions.
-
-    For every top-level ("def" at column 0) function definition found
-    in filename, records its line number, name, formal argument list,
-    and code (signature and body, with blank lines and comments
-    removed).
-
-    Args:
-        filename: Path of the .py file to parse.
-
-    Returns:
-        A tuple of (line_number, name, args, code) tuples, sorted
-        alphabetically by function name. line_number is an int; name,
-        args and code are strings.
-
-    Raises:
-        OSError: If filename cannot be read.
-    """
+    """Returns (line_number, name, args, code) for each top-level function in filename, sorted by name."""
     try:
         with open(filename, 'r', encoding='utf-8') as source_file:
             lines = source_file.readlines()
