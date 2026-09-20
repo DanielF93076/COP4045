@@ -3,9 +3,7 @@
 Daniel Farafonov
 """
 
-import io
 import re
-import tokenize
 
 
 def line_number(source_filename: str, dest_filename: str) -> None:
@@ -42,27 +40,57 @@ def line_number(source_filename: str, dest_filename: str) -> None:
 def _remove_comments_and_blanks(code: str) -> str:
     """Strips "#" comments and empty lines from a snippet of Python code.
 
+    Scans the code one character at a time, keeping track of whether
+    the current position is inside a string, so a "#" that is part of
+    a string (e.g. inside a docstring) is not mistaken for a comment.
+
     Args:
         code: Python source code (one or more statements).
 
     Returns:
         The code with every comment and blank line removed.
     """
-    comment_columns = {}
-    try:
-        for token in tokenize.generate_tokens(io.StringIO(code).readline):
-            if token.type == tokenize.COMMENT:
-                row, col = token.start
-                comment_columns[row] = col
-    except tokenize.TokenizeError:
-        pass
+    kept_chars = []
+    quote = ''  # '', "'", '"', "'''" or '"""': the string we are in.
+    i = 0
+    length = len(code)
+    while i < length:
+        char = code[i]
 
-    result_lines = []
-    for row, line in enumerate(code.split('\n'), start=1):
-        if row in comment_columns:
-            line = line[:comment_columns[row]]
-        if line.strip() != '':
-            result_lines.append(line.rstrip())
+        if quote:
+            if char == '\\' and quote in ("'", '"'):
+                kept_chars.append(code[i:i + 2])
+                i += 2
+                continue
+            if code.startswith(quote, i):
+                kept_chars.append(quote)
+                i += len(quote)
+                quote = ''
+                continue
+            kept_chars.append(char)
+            i += 1
+            continue
+
+        if code.startswith('"""', i) or code.startswith("'''", i):
+            quote = code[i:i + 3]
+            kept_chars.append(quote)
+            i += 3
+            continue
+        if char in ('"', "'"):
+            quote = char
+            kept_chars.append(char)
+            i += 1
+            continue
+        if char == '#':
+            while i < length and code[i] != '\n':
+                i += 1
+            continue
+
+        kept_chars.append(char)
+        i += 1
+
+    result_lines = [line.rstrip() for line in ''.join(kept_chars).split('\n')
+                     if line.strip() != '']
     return '\n'.join(result_lines) + ('\n' if result_lines else '')
 
 
