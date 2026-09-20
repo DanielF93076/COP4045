@@ -51,7 +51,7 @@ def _remove_comments_and_blanks(code: str) -> str:
         The code with every comment and blank line removed.
     """
     kept_chars = []
-    quote = ''  # '', "'", '"', "'''" or '"""': the string we are in.
+    quote = ''
     i = 0
     length = len(code)
     while i < length:
