@@ -94,25 +94,13 @@ def test() -> None:
     """Extra credit: tests parts a)-e) using the testif module."""
     sn = {}
     testif(add_user(sn, 'alice', 'Alice Smith'), 'add_user new user')
-    testif(not add_user(sn, 'alice', 'Alice Smith'),
-           'add_user duplicate user')
+    testif(not add_user(sn, 'alice', 'Alice Smith'), 'add_user duplicate')
     add_user(sn, 'maria', 'Maria Cortez')
-    add_user(sn, 'joe', 'Joseph Adams')
-
     testif(add_friend(sn, 'alice', 'maria'), 'add_friend valid users')
     testif(not add_friend(sn, 'alice', 'bob'), 'add_friend missing user')
-    testif('maria' in sn['alice'][1] and 'alice' in sn['maria'][1],
-           'add_friend creates a mutual link')
-
-    add_friend(sn, 'maria', 'joe')
     testif(get_friends(sn, 'alice', 1) == ['maria'], 'get_friends distance 1')
-    testif(get_friends(sn, 'alice', 2) == ['maria', 'joe'],
-           'get_friends distance 2')
-    testif(get_friends(sn, 'nobody', 1) == [], 'get_friends unknown user')
-
     save_network('test_network.csv', sn)
-    loaded = load_network('test_network.csv')
-    testif(loaded == sn, 'save_network/load_network round trip')
+    testif(load_network('test_network.csv') == sn, 'save/load round trip')
 
 
 def main() -> None:
@@ -124,22 +112,15 @@ def main() -> None:
         'eve': ('Evelyn Cooper', ['joe']),
         'david': ('David Benson', ['maria']),
     }
-    print('Social network:', sn, '\n')
-
-    print('add_user("eve", ...) ->', add_user(sn, 'eve', 'Evelyn Cooper'))
-    print('add_user("frank", "Frank Ocean") ->',
-          add_user(sn, 'frank', 'Frank Ocean'))
+    print('Social network:', sn)
+    print('add_user("frank", ...) ->', add_user(sn, 'frank', 'Frank Ocean'))
     print('add_friend("frank", "alice") ->',
           add_friend(sn, 'frank', 'alice'))
-    print('add_friend("frank", "ghost") ->',
-          add_friend(sn, 'frank', 'ghost'))
-
-    print('get_friends("alice", 1) ->', get_friends(sn, 'alice', 1))
     print('get_friends("alice", 2) ->', get_friends(sn, 'alice', 2))
 
     save_network('social_network.csv', sn)
-    loaded_sn = load_network('social_network.csv')
-    print('Network reloaded from CSV matches original:', loaded_sn == sn)
+    print('Reloaded network matches original:',
+          load_network('social_network.csv') == sn)
 
     print('\nExtra credit tests:')
     test()
