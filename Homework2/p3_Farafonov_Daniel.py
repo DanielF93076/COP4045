@@ -9,20 +9,7 @@ from testif import testif
 
 
 def add_user(sn: dict, username: str, fullname: str) -> bool:
-    """Adds a new user with no friends to a social network.
-
-    Args:
-        sn: Social network dict mapping username to
-            (full_name, [friend, ...]).
-        username: Username of the user to add.
-        fullname: Full name of the user to add.
-
-    Returns:
-        True if the user was added, False if username already existed.
-
-    Raises:
-        TypeError: If sn is not a dict.
-    """
+    """Adds a new user with no friends; returns False if username already exists."""
     try:
         if username in sn:
             return False
@@ -34,21 +21,7 @@ def add_user(sn: dict, username: str, fullname: str) -> bool:
 
 
 def add_friend(sn: dict, user1: str, user2: str) -> bool:
-    """Adds a mutual friend link between two users of a social network.
-
-    Args:
-        sn: Social network dict mapping username to
-            (full_name, [friend, ...]).
-        user1: Username of the first user.
-        user2: Username of the second user.
-
-    Returns:
-        True if the link was added, False if user1 or user2 is not
-        found in sn.
-
-    Raises:
-        TypeError: If sn is not a dict.
-    """
+    """Adds a mutual friend link; returns False if user1 or user2 is not in sn."""
     try:
         if user1 not in sn or user2 not in sn:
             return False
@@ -63,26 +36,7 @@ def add_friend(sn: dict, user1: str, user2: str) -> bool:
 
 
 def get_friends(sn: dict, user1: str, distance: int) -> list:
-    """Finds every friend of user1 within a given link distance.
-
-    Friends at distance 1 are the users in user1's immediate friend
-    list. Friends at distance 2 are those, plus the friends of those,
-    and so on. Avoids revisiting a user through a cycle.
-
-    Args:
-        sn: Social network dict mapping username to
-            (full_name, [friend, ...]).
-        user1: Username to start from.
-        distance: Maximum link distance to explore (positive int).
-
-    Returns:
-        A list of usernames reachable within distance links of user1,
-        in breadth-first order. Empty if user1 is not found in sn or
-        distance is not positive.
-
-    Raises:
-        TypeError: If sn is not a dict.
-    """
+    """Returns user1's friends up to distance links away, breadth-first, no repeats."""
     try:
         if user1 not in sn or distance < 1:
             return []
@@ -108,18 +62,7 @@ def get_friends(sn: dict, user1: str, distance: int) -> list:
 
 
 def save_network(filename: str, sn: dict) -> None:
-    """Saves a social network dictionary to a CSV file.
-
-    Each row of the file has format: username,fullname,friend1,friend2,...
-
-    Args:
-        filename: Path of the CSV file to create.
-        sn: Social network dict mapping username to
-            (full_name, [friend, ...]).
-
-    Raises:
-        OSError: If filename cannot be written (e.g. FileNotFoundError).
-    """
+    """Writes sn to filename as CSV rows: username,fullname,friend1,friend2,..."""
     try:
         with open(filename, 'w', newline='', encoding='utf-8') as csv_file:
             writer = csv.writer(csv_file)
@@ -131,19 +74,7 @@ def save_network(filename: str, sn: dict) -> None:
 
 
 def load_network(filename: str) -> dict:
-    """Loads a social network dictionary from a CSV file.
-
-    Args:
-        filename: Path of a CSV file previously written by
-            save_network.
-
-    Returns:
-        The social network dict mapping username to
-        (full_name, [friend, ...]).
-
-    Raises:
-        OSError: If filename cannot be read (e.g. FileNotFoundError).
-    """
+    """Reads a social network dict from a CSV file written by save_network."""
     try:
         sn = {}
         with open(filename, 'r', newline='', encoding='utf-8') as csv_file:

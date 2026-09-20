@@ -7,18 +7,7 @@ import csv
 
 
 def load_top_rated(filename: str) -> dict:
-    """Loads the top rated movies CSV file.
-
-    Args:
-        filename: Path to imdb-top-rated.csv (columns: Rank, Title,
-            Year, IMDB Rating).
-
-    Returns:
-        A dict mapping (title, year) tuples to their IMDb rating.
-
-    Raises:
-        OSError: If filename cannot be read.
-    """
+    """Returns {(title, year): rating} from imdb-top-rated.csv."""
     try:
         top_rated = {}
         with open(filename, 'r', encoding='utf-8') as csv_file:
@@ -34,18 +23,7 @@ def load_top_rated(filename: str) -> dict:
 
 
 def load_top_grossing(filename: str) -> dict:
-    """Loads the top grossing movies CSV file.
-
-    Args:
-        filename: Path to imdb-top-grossing.csv (columns: Rank, Title,
-            Year, USA Box Office).
-
-    Returns:
-        A dict mapping (title, year) tuples to USA box office totals.
-
-    Raises:
-        OSError: If filename cannot be read.
-    """
+    """Returns {(title, year): box office} from imdb-top-grossing.csv."""
     try:
         top_grossing = {}
         with open(filename, 'r', encoding='utf-8') as csv_file:
@@ -60,19 +38,7 @@ def load_top_grossing(filename: str) -> dict:
 
 
 def load_casts(filename: str) -> dict:
-    """Loads the movie casts CSV file.
-
-    Args:
-        filename: Path to imdb-top-casts.csv (no header; columns:
-            Title, Year, Director, Actor 1..5 in billing order).
-
-    Returns:
-        A dict mapping (title, year) tuples to a
-        (director, [actor, ...]) tuple.
-
-    Raises:
-        OSError: If filename cannot be read.
-    """
+    """Returns {(title, year): (director, [actors])} from imdb-top-casts.csv."""
     try:
         casts = {}
         with open(filename, 'r', encoding='utf-8') as csv_file:
@@ -90,12 +56,7 @@ def load_casts(filename: str) -> dict:
 
 
 def _print_ranking(ranking: list, limit: int = None) -> None:
-    """Prints a ranking list, one numbered entry per line.
-
-    Args:
-        ranking: A list of tuples, already sorted for display.
-        limit: Maximum number of entries to print. None prints all.
-    """
+    """Prints up to limit numbered entries from ranking (all if limit is None)."""
     entries = ranking if limit is None else ranking[:limit]
     for position, entry in enumerate(entries, start=1):
         print(position, entry)
@@ -103,22 +64,7 @@ def _print_ranking(ranking: list, limit: int = None) -> None:
 
 def display_top_collaborations(casts_filename: str, rated_filename: str,
                                 limit: int = None) -> None:
-    """Displays director/actor pairs ranked by shared top-rated movies.
-
-    For every (director, actor) pair that worked together on a movie
-    that also appears in the top rated movies file, counts the number
-    of such movies, then displays the pairs ranked in descending order
-    of that count.
-
-    Args:
-        casts_filename: Path to imdb-top-casts.csv.
-        rated_filename: Path to imdb-top-rated.csv.
-        limit: Maximum number of ranking entries to display. None
-            displays all entries.
-
-    Raises:
-        OSError: If either file cannot be read.
-    """
+    """Prints director/actor pairs ranked by movies together that are also top rated."""
     casts = load_casts(casts_filename)
     top_rated = load_top_rated(rated_filename)
 
@@ -141,19 +87,7 @@ def display_top_collaborations(casts_filename: str, rated_filename: str,
 
 def display_top_actors(casts_filename: str, grossing_filename: str,
                         limit: int = None) -> None:
-    """Displays actors ranked by total box office of their movies.
-
-    Only movies present in the top grossing file are counted.
-
-    Args:
-        casts_filename: Path to imdb-top-casts.csv.
-        grossing_filename: Path to imdb-top-grossing.csv.
-        limit: Maximum number of ranking entries to display. None
-            displays all entries.
-
-    Raises:
-        OSError: If either file cannot be read.
-    """
+    """Prints actors ranked by total box office of their top grossing movies."""
     casts = load_casts(casts_filename)
     top_grossing = load_top_grossing(grossing_filename)
 
