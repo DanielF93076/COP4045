@@ -18,8 +18,8 @@ class NVector:
         Precondition: either one argument that is a sequence of numbers,
             or two or more number arguments.
         Postcondition: the vector owns a new list with the given elements.
-        Raises TypeError if called with no arguments or with a single
-            argument that is not a sequence.
+        Raises TypeError if called with no arguments, with a single
+            argument that is not a sequence, or with non-number elements.
         """
         if not args:
             raise TypeError('NVector needs at least one argument')
@@ -27,6 +27,8 @@ class NVector:
             self.elements = list(args[0])
         else:
             self.elements = list(args)
+        if not all(isinstance(e, Number) for e in self.elements):
+            raise TypeError('NVector elements must be numbers')
 
     def __len__(self) -> int:
         """Returns the number of elements (the vector's dimension)."""
@@ -141,6 +143,11 @@ def main() -> None:
         testif(False, 'a) scalar argument raises TypeError')
     except TypeError:
         testif(True, 'a) scalar argument raises TypeError')
+    try:
+        NVector('abc')
+        testif(False, 'a) non-number elements raise TypeError')
+    except TypeError:
+        testif(True, 'a) non-number elements raise TypeError')
 
     testif(len(v_args) == 4, 'c) __len__')
 

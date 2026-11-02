@@ -111,8 +111,12 @@ class Island:
 class Animal:
     """An animal on the island that can move and breed.
 
-    Subclasses must define the class attribute breed_time.
+    Subclasses must define the class attribute breed_time. Subclasses that
+    eat other animals also set starve_time; the animal is then removed from
+    the island if it does not eat within starve_time ticks.
     """
+
+    starve_time: Optional[int] = None  # None: the animal never starves
 
     def __init__(self, island: Island, x: int = 0, y: int = 0,
                  s: str = 'A') -> None:
@@ -123,6 +127,7 @@ class Animal:
         self.y = y
         self.moved = False
         self.breed_clock = self.breed_time
+        self.starve_clock = self.starve_time
 
     def position(self) -> Tuple[int, int]:
         """Returns the coordinates of the current position."""
@@ -196,9 +201,19 @@ class Animal:
                                             y=location[1])
                 self.island.register(new_animal)
 
+    def fed(self) -> None:
+        """Resets the starve clock after eating."""
+        self.starve_clock = self.starve_time
+
     def clock_tick(self) -> None:
-        """Updates the breed clock by one tick."""
+        """Updates the breed clock and, for an animal that can starve, the
+        starve clock. Removes the animal from the island when it starves.
+        """
         self.breed_clock -= 1
+        if self.starve_clock is not None:
+            self.starve_clock -= 1
+            if self.starve_clock <= 0:
+                self.island.remove(self)
 
     def clear_moved_flag(self) -> None:
         """Clears the moved flag for the next turn."""
@@ -214,34 +229,7 @@ class Prey(Animal):
         super().__init__(island, x, y, s)
 
 
-class Starving(Animal):
-    """An animal that is removed from the island if it does not eat within
-    starve_time ticks.
-
-    Subclasses must define the class attributes breed_time and starve_time.
-    """
-
-    def __init__(self, island: Island, x: int = 0, y: int = 0,
-                 s: str = 'S') -> None:
-        """Creates a starving animal at (x, y) on island, printed as s."""
-        super().__init__(island, x, y, s)
-        self.starve_clock = self.starve_time
-
-    def fed(self) -> None:
-        """Resets the starve clock after eating."""
-        self.starve_clock = self.starve_time
-
-    def clock_tick(self) -> None:
-        """Updates the breed and starve clocks and removes the animal from
-        the island when the starve clock runs out.
-        """
-        super().clock_tick()
-        self.starve_clock -= 1
-        if self.starve_clock <= 0:
-            self.island.remove(self)
-
-
-class Predator(Starving):
+class Predator(Animal):
     """An animal that eats prey and starves if it does not eat."""
 
     def __init__(self, island: Island, x: int = 0, y: int = 0,
@@ -255,7 +243,7 @@ class Predator(Starving):
             self.fed()
 
 
-class Human(Starving):
+class Human(Animal):
     """An animal that hunts predators every hunt_time ticks, does not kill
     prey, and starves if it does not kill a predator.
 

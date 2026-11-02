@@ -3,11 +3,14 @@
 Daniel Farafonov
 """
 
+from typing import Dict, List
+
 
 class ParkingPermit:
     """A parking permit with an owner, a duration and a fee schedule."""
 
-    def __init__(self, owner: str, months: int, fees: dict) -> None:
+    def __init__(self, owner: str, months: int,
+                 fees: Dict[str, float]) -> None:
         """Creates a permit.
 
         Precondition: owner is a non-empty string, months is an int >= 1,
@@ -36,7 +39,7 @@ class ParkingPermit:
 class StudentPermit(ParkingPermit):
     """A student permit that also records the number of vehicles."""
 
-    def __init__(self, owner: str, months: int, fees: dict,
+    def __init__(self, owner: str, months: int, fees: Dict[str, float],
                  vehicles: int = 1) -> None:
         """Creates a student permit.
 
@@ -68,7 +71,7 @@ class StudentPermit(ParkingPermit):
 class FacultyPermit(ParkingPermit):
     """A faculty permit that also records whether garage access is included."""
 
-    def __init__(self, owner: str, months: int, fees: dict,
+    def __init__(self, owner: str, months: int, fees: Dict[str, float],
                  garage: bool = False) -> None:
         """Creates a faculty permit.
 
@@ -93,15 +96,16 @@ class FacultyPermit(ParkingPermit):
                 f'{self.fees!r}, {self.garage})')
 
 
-def summarize_list(permits: list) -> float:
-    """Prints each permit's owner and cost and returns the total revenue.
+def summarize_list(permits: List[ParkingPermit]) -> float:
+    """Prints each permit (its __str__, which starts with the owner's
+    name) with its cost, and returns the total revenue.
 
     Precondition: permits is a list of ParkingPermit objects.
     """
     total = 0
     for permit in permits:
         cost = permit.cost()
-        print(f'{permit.owner}: ${cost:.2f}')
+        print(f'{permit} -> cost ${cost:.2f}')
         total += cost
     return total
 

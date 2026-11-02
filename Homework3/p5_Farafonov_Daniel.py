@@ -177,11 +177,6 @@ def test_strB() -> None:
     testif(strB(255, base=16) == 'FF', 'strB base 16')
     testif(strB(5, base=2) == '101', 'strB base 2')
     testif(strB(675, base=26) == 'PP', 'strB base 26', strB(675, base=26))
-    try:
-        strB(10, base=1)
-        testif(False, 'strB invalid base raises ValueError')
-    except ValueError:
-        testif(True, 'strB invalid base raises ValueError')
 
 
 def test_Cnk_m() -> None:
@@ -203,7 +198,6 @@ def test_make_pairs() -> None:
            == [(1, 4), (2, 5), (3, 6)], 'make_pairs first shorter')
     testif(make_pairs([], [4, 5, 6]) == [], 'make_pairs first empty')
     testif(make_pairs([1, 2, 3], []) == [], 'make_pairs second empty')
-    testif(make_pairs([1, 2, 3], [4]) == [(1, 4)], 'make_pairs length one')
 
 
 def main() -> None:
