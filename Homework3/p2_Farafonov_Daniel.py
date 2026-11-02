@@ -11,12 +11,7 @@ class ParkingPermit:
 
     def __init__(self, owner: str, months: int,
                  fees: Dict[str, float]) -> None:
-        """Creates a permit.
-
-        Precondition: owner is a non-empty string, months is an int >= 1,
-            fees maps fee names to amounts.
-        Raises ValueError if months < 1.
-        """
+        """Creates a permit."""
         if months < 1:
             raise ValueError('months must be at least 1')
         self.owner = owner
@@ -41,12 +36,7 @@ class StudentPermit(ParkingPermit):
 
     def __init__(self, owner: str, months: int, fees: Dict[str, float],
                  vehicles: int = 1) -> None:
-        """Creates a student permit.
-
-        Precondition: fees has keys 'monthly' and 'extra_vehicle',
-            vehicles is an int >= 1.
-        Raises ValueError if vehicles < 1.
-        """
+        """Creates a student permit."""
         super().__init__(owner, months, fees)
         if vehicles < 1:
             raise ValueError('vehicles must be at least 1')
@@ -73,10 +63,7 @@ class FacultyPermit(ParkingPermit):
 
     def __init__(self, owner: str, months: int, fees: Dict[str, float],
                  garage: bool = False) -> None:
-        """Creates a faculty permit.
-
-        Precondition: fees has keys 'monthly' and 'garage'.
-        """
+        """Creates a faculty permit."""
         super().__init__(owner, months, fees)
         self.garage = garage
 
@@ -97,11 +84,7 @@ class FacultyPermit(ParkingPermit):
 
 
 def summarize_list(permits: List[ParkingPermit]) -> float:
-    """Prints each permit (its __str__, which starts with the owner's
-    name) with its cost, and returns the total revenue.
-
-    Precondition: permits is a list of ParkingPermit objects.
-    """
+    """Prints each permit with its cost and returns the total."""
     total = 0
     for permit in permits:
         cost = permit.cost()

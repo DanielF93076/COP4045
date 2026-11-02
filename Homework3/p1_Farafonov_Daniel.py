@@ -13,14 +13,7 @@ class NVector:
     """An N-dimensional vector of real numbers stored in a list."""
 
     def __init__(self, *args: Union[Number, Sequence[Number]]) -> None:
-        """Creates a vector from one sequence or from two or more numbers.
-
-        Precondition: either one argument that is a sequence of numbers,
-            or two or more number arguments.
-        Postcondition: the vector owns a new list with the given elements.
-        Raises TypeError if called with no arguments, with a single
-            argument that is not a sequence, or with non-number elements.
-        """
+        """Creates a vector from one sequence or from two or more numbers."""
         if not args:
             raise TypeError('NVector needs at least one argument')
         if len(args) == 1:
@@ -35,23 +28,13 @@ class NVector:
         return len(self.elements)
 
     def __getitem__(self, index: int) -> Number:
-        """Returns the element at index; negative indices work like lists.
-
-        Raises IndexError if index is out of range, TypeError if index is
-        not an int.
-        """
+        """Returns the element at index; negative indices work like lists."""
         if not isinstance(index, int):
             raise TypeError('NVector index must be an int')
         return self.elements[index]
 
     def __setitem__(self, index: int, value: Number) -> None:
-        """Sets the element at index to value.
-
-        Precondition: index is an int in range, value is a number.
-        Postcondition: self[index] == value.
-        Raises IndexError if index is out of range, TypeError if index is
-        not an int or value is not a number.
-        """
+        """Sets the element at index to value."""
         if not isinstance(index, int):
             raise TypeError('NVector index must be an int')
         if not isinstance(value, Number):
@@ -77,12 +60,7 @@ class NVector:
         return not self == other
 
     def __add__(self, other: Union['NVector', Number]) -> 'NVector':
-        """Returns self + other, element-wise for a vector or per element
-        for a number.
-
-        Raises ValueError if other is a vector of a different length.
-        Returns NotImplemented for unsupported operand types.
-        """
+        """Returns self + other, element-wise or per element."""
         if isinstance(other, NVector):
             if len(self) != len(other):
                 raise ValueError('NVector lengths differ')
@@ -97,13 +75,7 @@ class NVector:
         return self + other
 
     def __mul__(self, other: Union['NVector', Number]) -> Number:
-        """Returns the scalar product of self and other.
-
-        For a vector other, returns the sum of self[i] * other[i].
-        For a number other, returns the sum of self[i] * other.
-        Raises ValueError if other is a vector of a different length.
-        Returns NotImplemented for unsupported operand types.
-        """
+        """Returns the scalar product of self and other."""
         if isinstance(other, NVector):
             if len(self) != len(other):
                 raise ValueError('NVector lengths differ')
@@ -118,11 +90,7 @@ class NVector:
 
     @classmethod
     def zeros(cls, n: int) -> 'NVector':
-        """Returns a new n-dimensional vector with all elements 0.
-
-        Precondition: n is an int >= 1.
-        Raises ValueError if n < 1.
-        """
+        """Returns a new n-dimensional vector with all elements 0."""
         if n < 1:
             raise ValueError('NVector dimension must be at least 1')
         return cls([0] * n)

@@ -25,14 +25,7 @@ cnk_memo: Dict[Tuple[int, int], int] = {}
 
 def _leaf_branch(t: turtle.Turtle, level: int, length: float,
                  curve: float) -> None:
-    """Draws one recursive leaf branch and returns the turtle to its
-    starting position and heading.
-
-    Each branch is a straight segment followed by a vein on each side and
-    a shorter continuation of the midrib, each a smaller branch. At level 1
-    the veins and the tip are single short lines. A non-zero curve bends
-    the midrib to the right by curve degrees at every level.
-    """
+    """Draws one recursive leaf branch and returns the turtle."""
     t.forward(length)
     t.right(curve)
     if level <= 1:
@@ -53,11 +46,7 @@ def _leaf_branch(t: turtle.Turtle, level: int, length: float,
 
 
 def _draw_leaf(level: int, length: float, curve: float) -> None:
-    """Sets up a turtle, draws the petiole of the given length pointing up,
-    then draws the recursive leaf blade on top of it.
-
-    Precondition: level >= 1, length > 0.
-    """
+    """Sets up a turtle and draws the petiole and the leaf blade."""
     if level < 1 or length <= 0:
         raise ValueError('level must be >= 1 and length > 0')
     screen = turtle.Screen()
@@ -79,30 +68,17 @@ def _draw_leaf(level: int, length: float, curve: float) -> None:
 
 
 def draw_leaf_straight(level: int, length: float) -> None:
-    """Draws a straight recursive leaf with the given recursion level and
-    petiole (lower stem) length.
-
-    Precondition: level >= 1, length > 0.
-    """
+    """Draws a straight recursive leaf."""
     _draw_leaf(level, length, 0)
 
 
 def draw_leaf_curved(level: int, length: float) -> None:
-    """Draws a recursive leaf whose midrib curves to the right, with the
-    given recursion level and petiole (lower stem) length.
-
-    Precondition: level >= 1, length > 0.
-    """
+    """Draws a recursive leaf that curves to the right."""
     _draw_leaf(level, length, CURVE_ANGLE)
 
 
 def strB(n: int, base: int = 10) -> str:
-    """Returns the representation of n in the given base, recursively.
-
-    Digits greater than 9 are the letters 'A' to 'Z'.
-    Precondition: n is an int >= 0, base is an int with 2 <= base <= 26.
-    Raises ValueError if a precondition is not met.
-    """
+    """Returns the representation of n in the given base, recursively."""
     if not isinstance(n, int) or n < 0:
         raise ValueError('n must be a non-negative int')
     if not 2 <= base <= 26:
@@ -113,21 +89,14 @@ def strB(n: int, base: int = 10) -> str:
 
 
 def Cnk(n: int, k: int) -> int:
-    """Returns n-choose-k with plain recursion, without memoization.
-
-    Precondition: 0 <= k <= n.
-    """
+    """Returns n-choose-k with plain recursion, without memoization."""
     if k == 0 or k == n:
         return 1
     return Cnk(n - 1, k - 1) + Cnk(n - 1, k)
 
 
 def Cnk_m(n: int, k: int) -> int:
-    """Returns n-choose-k recursively, memoizing results in cnk_memo.
-
-    Precondition: n and k are ints with 0 <= k <= n.
-    Raises ValueError if a precondition is not met.
-    """
+    """Returns n-choose-k recursively, memoizing results in cnk_memo."""
     if not 0 <= k <= n:
         raise ValueError('need 0 <= k <= n')
     if k == 0 or k == n:
@@ -138,9 +107,7 @@ def Cnk_m(n: int, k: int) -> int:
 
 
 def run_Cnk(pairs: Optional[Sequence[Tuple[int, int]]] = None) -> None:
-    """Prints n-choose-k for each (n, k) in pairs with the time it took,
-    comparing Cnk (no memoization, only for small n) and Cnk_m.
-    """
+    """Prints and times n-choose-k for each (n, k) in pairs."""
     if pairs is None:
         pairs = [(5, 2), (10, 5), (20, 10), (24, 12), (50, 25), (100, 50)]
     for n, k in pairs:
@@ -158,11 +125,7 @@ def run_Cnk(pairs: Optional[Sequence[Tuple[int, int]]] = None) -> None:
 
 def make_pairs(seq1: Sequence, seq2: Sequence,
                acc: Optional[List[tuple]] = None) -> List[tuple]:
-    """Returns the list of tuples (seq1[i], seq2[i]) for every index i
-    of the shorter sequence, built recursively in the accumulator acc.
-
-    Precondition: seq1 and seq2 are sequences; acc is None or a list.
-    """
+    """Returns the pairs (seq1[i], seq2[i]), built recursively in acc."""
     if acc is None:
         acc = []
     if not seq1 or not seq2:
@@ -201,11 +164,7 @@ def test_make_pairs() -> None:
 
 
 def main() -> None:
-    """Runs the unit tests and run_Cnk, then draws a leaf.
-
-    Draws the curved leaf if the program is started with the argument
-    "curved", otherwise the straight leaf.
-    """
+    """Runs the unit tests and run_Cnk, then draws a leaf."""
     test_strB()
     test_Cnk_m()
     test_make_pairs()

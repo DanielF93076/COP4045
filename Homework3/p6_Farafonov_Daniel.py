@@ -7,18 +7,10 @@ from typing import List, Optional, Tuple
 
 
 class Entry:
-    """An entry (file or folder) in a storage system.
-
-    Subclasses must override size().
-    """
+    """An entry (file or folder) in a storage system."""
 
     def __init__(self, name: str, parent: Optional['Folder'] = None) -> None:
-        """Creates an entry with the given name.
-
-        If parent is given, the entry is added to the parent's children.
-        Precondition: name is a non-empty str.
-        Raises ValueError if name is empty.
-        """
+        """Creates an entry with the given name."""
         if not name:
             raise ValueError('name must not be empty')
         self.name = name
@@ -31,16 +23,11 @@ class Entry:
         return self._parent
 
     def size(self) -> int:
-        """Returns the number of bytes used by this entry.
-
-        Raises NotImplementedError; subclasses must override it.
-        """
+        """Returns the number of bytes used by this entry."""
         raise NotImplementedError('size() must be overridden')
 
     def absolute_path(self) -> List['Entry']:
-        """Returns the list of entries from this entry up to the root:
-        [self, parent, grandparent, ..., root], computed recursively.
-        """
+        """Returns [self, parent, ..., root], computed recursively."""
         if self._parent is None:
             return [self]
         return [self] + self._parent.absolute_path()
@@ -59,11 +46,7 @@ class File(Entry):
 
     def __init__(self, name: str, bytes_used: int,
                  parent: Optional['Folder'] = None) -> None:
-        """Creates a file using bytes_used bytes.
-
-        Precondition: bytes_used is an int >= 0.
-        Raises ValueError if bytes_used is negative.
-        """
+        """Creates a file using bytes_used bytes."""
         if bytes_used < 0:
             raise ValueError('bytes_used must be nonnegative')
         self.bytes_used = bytes_used
@@ -83,12 +66,7 @@ class Folder(Entry):
         super().__init__(name, parent)
 
     def add(self, entry: Entry) -> None:
-        """Adds entry to this folder's children and makes this folder its
-        parent.
-
-        Precondition: entry is an Entry that has no parent yet.
-        Raises ValueError if entry already has a parent.
-        """
+        """Adds entry to the children and becomes its parent."""
         if entry.parent() is not None:
             raise ValueError(f'{entry.name} already has a parent')
         entry._parent = self
@@ -99,20 +77,12 @@ class Folder(Entry):
         return tuple(self._children)
 
     def size(self) -> int:
-        """Returns the total size of all children, including the contents
-        of nested folders.
-        """
+        """Returns the total size of all children, nested ones included."""
         return sum(child.size() for child in self._children)
 
 
 def find_large_files(entry: Entry, minimum_size: int) -> List[File]:
-    """Returns all files at or below entry whose size is at least
-    minimum_size, found recursively.
-
-    If entry is a File, returns [entry] if it is large enough, else [].
-    If entry is a Folder, returns the large files from all of its
-    children and nested folders, in the order they were added.
-    """
+    """Returns the files under entry of at least minimum_size bytes."""
     if isinstance(entry, File):
         return [entry] if entry.size() >= minimum_size else []
     large_files = []
@@ -128,9 +98,7 @@ def path_string(entry: Entry) -> str:
 
 
 def main() -> None:
-    """Builds a folder tree and shows size, find_large_files and
-    absolute_path at work.
-    """
+    """Builds a folder tree and demonstrates the classes and functions."""
     university = Folder('university')
     File('budget.xlsx', 40_000, university)
     engineering = Folder('engineering', university)

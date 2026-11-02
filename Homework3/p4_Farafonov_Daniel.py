@@ -33,15 +33,7 @@ def _check_str(value: str, name: str) -> None:
 
 
 def ed_read(filename: str, from_: int = 0, to: int = -1) -> str:
-    """Returns the file content between positions from_ and to.
-
-    The range is half-open: [from_, to). If to == -1, returns from from_
-    to the end of the file. (from_ has a trailing underscore because from
-    is a Python keyword.)
-    Precondition: 0 <= from_ <= to <= file length, or to == -1.
-    Raises IndexError if to exceeds the file length or the range is
-    invalid, FileNotFoundError if the file does not exist.
-    """
+    """Returns the file content between positions from_ and to."""
     content = _read_all(filename)
     if to == -1:
         to = len(content)
@@ -53,14 +45,7 @@ def ed_read(filename: str, from_: int = 0, to: int = -1) -> str:
 
 
 def ed_find(filename: str, search_str: str) -> List[int]:
-    """Returns the positions in the file where search_str starts.
-
-    Overlapping occurrences are all reported. Returns [] if search_str is
-    not found.
-    Precondition: search_str is a non-empty str.
-    Raises ValueError if search_str is empty, FileNotFoundError if the
-    file does not exist.
-    """
+    """Returns the positions in the file where search_str starts."""
     _check_str(search_str, 'search_str')
     if not search_str:
         raise ValueError('search_str must not be empty')
@@ -75,17 +60,7 @@ def ed_find(filename: str, search_str: str) -> List[int]:
 
 def ed_replace(filename: str, search_str: str, replace_with: str,
                occurrence: int = -1) -> int:
-    """Replaces search_str with replace_with in the file.
-
-    If occurrence == -1, replaces all (non-overlapping) occurrences.
-    If occurrence >= 0, replaces only the occurrence with that index
-    (0 is the first); nothing is replaced if there are fewer occurrences.
-    Returns the number of replacements made.
-    Precondition: search_str is a non-empty str, occurrence >= -1.
-    Postcondition: the file is only rewritten if something was replaced.
-    Raises ValueError for an empty search_str or occurrence < -1,
-    FileNotFoundError if the file does not exist.
-    """
+    """Replaces search_str with replace_with in the file."""
     _check_str(search_str, 'search_str')
     _check_str(replace_with, 'replace_with')
     if not search_str:
@@ -115,12 +90,7 @@ def ed_replace(filename: str, search_str: str, replace_with: str,
 
 
 def ed_append(filename: str, string: str) -> int:
-    """Appends string to the end of the file, creating it if needed.
-
-    Returns the number of characters written.
-    Precondition: string is a str.
-    Raises TypeError if string is not a str.
-    """
+    """Appends string to the end of the file, creating it if needed."""
     _check_str(string, 'string')
     with open(filename, 'a', encoding='utf-8') as text_file:
         return text_file.write(string)

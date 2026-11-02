@@ -22,21 +22,14 @@ class Island:
 
     def __init__(self, n: int, prey_count: int = 0, predator_count: int = 0,
                  count_humans: int = 0) -> None:
-        """Creates an empty n x n grid, then fills it with animals.
-
-        Precondition: n >= 1 and the total animal count is at most n * n.
-        """
+        """Creates an empty n x n grid, then fills it with animals."""
         self.grid_size = n
         self.grid = [[0] * n for _ in range(n)]
         self.init_animals(prey_count, predator_count, count_humans)
 
     def init_animals(self, prey_count: int, predator_count: int,
                      count_humans: int) -> None:
-        """Puts the given numbers of animals at random unoccupied cells.
-
-        Precondition: the total animal count is at most the number of
-            free cells, otherwise this never returns.
-        """
+        """Puts the given numbers of animals at random unoccupied cells."""
         for animal_class, total in ((Prey, prey_count),
                                     (Predator, predator_count),
                                     (Human, count_humans)):
@@ -109,12 +102,7 @@ class Island:
 
 
 class Animal:
-    """An animal on the island that can move and breed.
-
-    Subclasses must define the class attribute breed_time. Subclasses that
-    eat other animals also set starve_time; the animal is then removed from
-    the island if it does not eat within starve_time ticks.
-    """
+    """An animal on the island that can move and breed."""
 
     starve_time: Optional[int] = None  # None: the animal never starves
 
@@ -139,11 +127,7 @@ class Animal:
 
     def check_grid(self, type_looking_for: type = int
                    ) -> Optional[Tuple[int, int]]:
-        """Returns the first of the 8 neighboring cells that holds an
-        object of type type_looking_for, or None if there is none.
-
-        Use int to look for an empty cell.
-        """
+        """Returns a neighboring cell holding type_looking_for, or None."""
         # neighbor offsets
         offsets = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1),
                    (0, -1), (1, -1)]
@@ -175,11 +159,7 @@ class Animal:
         """Does nothing: a plain animal does not eat other animals."""
 
     def eat_neighbor(self, food_type: Type['Animal']) -> bool:
-        """Moves onto a neighboring animal of type food_type and removes it.
-
-        Postcondition: returns True if an animal was eaten. The animal
-            does not eat if it already moved this turn.
-        """
+        """Moves onto a neighboring animal of type food_type and removes it."""
         if self.moved:
             return False
         location = self.check_grid(food_type)
@@ -190,9 +170,7 @@ class Animal:
         return True
 
     def breed(self) -> None:
-        """Places a new animal of the same class in an open neighboring
-        cell when the breed clock has run out. Otherwise waits.
-        """
+        """Places a new animal in an open neighboring cell when ready."""
         if self.breed_clock <= 0:
             location = self.check_grid(int)
             if location:
@@ -206,9 +184,7 @@ class Animal:
         self.starve_clock = self.starve_time
 
     def clock_tick(self) -> None:
-        """Updates the breed clock and, for an animal that can starve, the
-        starve clock. Removes the animal from the island when it starves.
-        """
+        """Updates the clocks and removes the animal if it starves."""
         self.breed_clock -= 1
         if self.starve_clock is not None:
             self.starve_clock -= 1
@@ -244,11 +220,7 @@ class Predator(Animal):
 
 
 class Human(Animal):
-    """An animal that hunts predators every hunt_time ticks, does not kill
-    prey, and starves if it does not kill a predator.
-
-    Requires the class attributes breed_time, starve_time and hunt_time.
-    """
+    """An animal that hunts predators every hunt_time ticks."""
 
     def __init__(self, island: Island, x: int = 0, y: int = 0,
                  s: str = 'H') -> None:
@@ -257,9 +229,7 @@ class Human(Animal):
         self.hunt_clock = self.hunt_time
 
     def eat(self) -> None:
-        """Every hunt_time ticks, eats a neighboring predator if there is
-        one. The hunt clock restarts after every hunt, successful or not.
-        """
+        """Every hunt_time ticks, eats a neighboring predator if any."""
         if self.hunt_clock <= 0:
             self.hunt_clock = self.hunt_time
             if self.eat_neighbor(Predator):
@@ -276,11 +246,7 @@ def main(predator_breed_time: int = 6, predator_starve_time: int = 4,
          initial_prey: int = 225, human_breed_time: int = 15,
          human_starve_time: int = 15, human_hunt_time: int = 6,
          initial_humans: int = 8, size: int = 30, ticks: int = 1000) -> None:
-    """Runs the simulation and plots the populations at the end.
-
-    Stops when all three populations are unchanged for STABLE_TICKS ticks
-    or after ticks time units.
-    """
+    """Runs the simulation and plots the populations at the end."""
     Predator.breed_time = predator_breed_time
     Predator.starve_time = predator_starve_time
     Prey.breed_time = prey_breed_time
